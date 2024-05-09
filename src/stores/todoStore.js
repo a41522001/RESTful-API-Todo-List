@@ -1,29 +1,47 @@
 import { defineStore } from "pinia";
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 export const useTodoStore = defineStore("todo", () => {
     const todos = ref([]);
+    const datas = ref({});
+    const userIsLogin = computed(() => {
+        return !! datas.value.email;
+    })
     onMounted(async () => {
-        fetchTodo();
+        await fetchTodo();
     })
     async function fetchTodo(){
-        try{
-            let res = await fetch("http://localhost:3000/");
-            let json = await res.json();
-            todos.value = json.data;
-            console.log(todos.value);
-        }catch(err){
-            console.log(err.message);
-        }
+        if(localStorage.getItem("token")){
+            let token = localStorage.getItem("token");
+            try{
+                let res = await fetch("http://localhost:3000/", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                let json = await res.json();
+                datas.value = json.data;
+                todos.value = json.data.todos;
+            }catch(err){
+                console.log(err.message);
+            }
+        }else{
+            return;
+        } 
     }
 
     async function addTodo(newTodo){
+        let email = datas.value.email;
+        console.log(email);
+        console.log(newTodo);
         try{
             let res = await fetch("http://localhost:3000/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({title: newTodo})
+                body: JSON.stringify({title: newTodo, email: email})
             })
             if(res.ok){
                 fetchTodo();
@@ -34,8 +52,9 @@ export const useTodoStore = defineStore("todo", () => {
     }
     
     async function removeTodo(id){
+        let email = datas.value.email;
         try{
-            let res = await fetch(`http://localhost:3000/${id}`, {
+            let res = await fetch(`http://localhost:3000/${id}?email=${encodeURIComponent(email)}`, {
                 method: "DELETE"
             })
             if(res.ok){
@@ -47,8 +66,9 @@ export const useTodoStore = defineStore("todo", () => {
     }
 
     async function toggleDone(id){
+        let email = datas.value.email;
         try{
-            let res = await fetch(`http://localhost:3000/${id}`, {
+            let res = await fetch(`http://localhost:3000/done/${id}?email=${encodeURIComponent(email)}`, {
                 method: "PATCH"
             })
             if(res.ok){
@@ -58,6 +78,31 @@ export const useTodoStore = defineStore("todo", () => {
             console.log(err.message);
         }
     }
+    
+    async function updateTodo(newValId, newVal){
+        let email = datas.value.email;
+        try{
+            let res = await fetch(`http://localhost:3000/title/${newValId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({title: newVal, email: email})
+            })
+            if(res.ok){
+                fetchTodo();
+            }
+        }catch(err){
+            console.log(err.message);
+        }
+    }
 
-    return { todos, addTodo, removeTodo, toggleDone }
+    function reset(){
+        localStorage.clear("token");
+        todos.value.length = 0;
+        Object.keys(datas.value).forEach(key => delete datas.value[key]);
+        console.log(todos.value);
+        console.log(datas.value);
+    }
+    return { todos, datas, userIsLogin, addTodo, removeTodo, toggleDone, updateTodo, fetchTodo, reset }
 });

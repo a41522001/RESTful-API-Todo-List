@@ -2,11 +2,13 @@ import { createRouter, createWebHistory } from "vue-router";
 import All from "../views/All.vue";
 import Progressing from "../views/Progressing.vue";
 import Finish from "../views/Finish.vue";
+import Login from "../views/Login.vue";
+import Signup from "../views/Signup.vue";
 
 const routes = [
     {
         path: "/",
-        redirect: "/all"
+        redirect: "/login"
     },
     {
         path: "/all",
@@ -22,6 +24,16 @@ const routes = [
         path: "/finish",
         name: "finish",
         component: Finish
+    },
+    {
+        path: "/login",
+        name: "login",
+        component: Login
+    },
+    {
+        path: "/signup",
+        name: "signup",
+        component: Signup
     }
 ];
 

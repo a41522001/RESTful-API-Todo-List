@@ -2,17 +2,19 @@
     import { ref, onMounted } from "vue";
     import * as bootstrap from 'bootstrap';
     import { useTodoStore } from "@/stores/todoStore";
+    import { useRouter } from "vue-router";
     const todoStore = useTodoStore();
     const message = ref("");
     const email = ref("");
     const password = ref("");
+    const router = useRouter();
     async function login(){
         const data = {
             email: email.value,
             password: password.value
         }
         try{
-            let res = await fetch("http://localhost:3000/login", {
+            let res = await fetch("https://restful-api-todo-list-express.onrender.com/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -27,6 +29,13 @@
                 email.value = "";
                 password.value = "";
                 await todoStore.fetchTodo();
+                setTimeout(() => {
+                    const modalBackdrop = document.querySelector('.modal-backdrop');
+                    if (modalBackdrop) {
+                        modalBackdrop.remove();
+                    }
+                    router.push({name: "home"});
+                }, 2000);
             }else{
                 let err = await res.json();
                 message.value = err.message;

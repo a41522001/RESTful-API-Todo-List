@@ -1,51 +1,53 @@
 <script setup>
-    // import { ref, watchEffect, provide, computed } from "vue";
-    // import { useTodoStore } from "./stores/todoStore";
-    // const todoStore = useTodoStore();
-    // const todos = ref([]);
-    // const datas = ref({});
-    // provide("data", todos);
-    // watchEffect(() => {
-    //     todos.value = todoStore.todos;
-    // })
-    // watchEffect(() => {
-    //     datas.value = todoStore.datas;
-    // })
-    // const userIsLogin = computed(() => {
-    //     return todoStore.userIsLogin;
-    // })
-    // const newTodo = ref("");
-    // async function addTodo(){
-    //     if(newTodo != ""){
-    //         await todoStore.addTodo(newTodo.value);
-    //         newTodo.value = "";
-    //     }else{
-    //         return;
-    //     }
-    // }
-    // async function removeTodo(id){
-    //     await todoStore.removeTodo(id);
-    // }
-    // async function toggleDone(id){
-    //     await todoStore.toggleDone(id);
-    // }
-    // async function updateTodo(newValId, newVal){
-    //     if(newVal === ""){
-    //         return;
-    //     }
-    //     await todoStore.updateTodo(newValId, newVal);
-    // }
-    // function logout(){
-    //     todoStore.reset();
-    // }
+    import { ref, watchEffect, provide, computed } from "vue";
+    import { useTodoStore } from "../stores/todoStore";
+    import { useRouter } from "vue-router";
+    const router = useRouter();
+    const todoStore = useTodoStore();
+    const todos = ref([]);
+    const datas = ref({});
+    provide("data", todos);
+    watchEffect(() => {
+        todos.value = todoStore.todos;
+    })
+    watchEffect(() => {
+        datas.value = todoStore.datas;
+    })
+    const userIsLogin = computed(() => {
+        return todoStore.userIsLogin;
+    })
+    const newTodo = ref("");
+    async function addTodo(){
+        if(newTodo != ""){
+            await todoStore.addTodo(newTodo.value);
+            newTodo.value = "";
+        }else{
+            return;
+        }
+    }
+    async function removeTodo(id){
+        await todoStore.removeTodo(id);
+    }
+    async function toggleDone(id){
+        await todoStore.toggleDone(id);
+    }
+    async function updateTodo(newValId, newVal){
+        if(newVal === ""){
+            return;
+        }
+        await todoStore.updateTodo(newValId, newVal);
+    }
+    function logout(){
+        todoStore.reset();
+        router.push({name: "login"});
+    }
 </script>
 
 <template>
-    <router-view></router-view>
-    <!-- <div v-if="userIsLogin"> -->
-        <!-- <header>
+    <div v-if="userIsLogin">
+        <header>
             <h1 class="text-center text-primary fw-bold py-4">Todo List</h1>
-            <button @click="logout">登出</button>
+            <button class="logout-btn btn btn-secondary btn-sm" @click.prevent="logout">登出</button>
         </header>
         <main class="container-fluid p-3">
             <div class="row justify-content-center g-2">
@@ -92,13 +94,13 @@
                             <div class="col-12 p-0">
                                 <ul class="nav nav-pills fs-4">
                                     <li class="nav-item">
-                                        <router-link class="nav-link" active-class="active" to="/all">全部</router-link>
+                                        <router-link class="nav-link" active-class="active" to="all">全部</router-link>
                                     </li>
                                     <li class="nav-item">
-                                        <router-link class="nav-link" active-class="active" to="/progressing">進行中</router-link>
+                                        <router-link class="nav-link" active-class="active" to="progressing">進行中</router-link>
                                     </li>
                                     <li class="nav-item">
-                                        <router-link class="nav-link" active-class="active" to="/finish">已完成</router-link>
+                                        <router-link class="nav-link" active-class="active" to="finish">已完成</router-link>
                                     </li>
                                 </ul>
                                 <router-view @remove="removeTodo" @toggle="toggleDone" @update="updateTodo"></router-view>
@@ -107,27 +109,20 @@
                     </div>
                 </div>
             </div>
-        </main> -->
-    <!-- </div> -->
-    <!-- <div v-else> -->
-        <!-- <router-view></router-view> -->
-    <!-- </div> -->
+        </main>
+    </div>
 </template>
 
-<style>
-    html,
-    body{
-        font-family: "Noto Sans TC", sans-serif;
-        width: 100%;
-        height: auto;
-        min-height: 100%;
-        background-image: linear-gradient(90deg, #7fbdcc, #1b7f86, #3d8799);
+<style scoped>
+    header{
+        position: relative;
     }
-    #app{
-        background-color: rgba(243, 243, 243, .5);
-        min-height: 100vh;
+    .logout-btn{
+        position: absolute;
+        top: 5px;
+        right: 50px;
     }
-    /* .avatar{
+    .avatar{
         max-width: 200px;
         max-height: 200px;
     }
@@ -143,7 +138,9 @@
         }
     }
     @media (max-width: 768px) {
-
+        .logout-btn{
+            right: 5px;
+        }
         .avatar{
             max-width: 120px;
             max-height: 120px;
@@ -157,5 +154,5 @@
             max-width: 80px;
             max-height: 80px;
         }
-    } */
+    }
 </style>

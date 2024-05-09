@@ -13,7 +13,7 @@ export const useTodoStore = defineStore("todo", () => {
         if(localStorage.getItem("token")){
             let token = localStorage.getItem("token");
             try{
-                let res = await fetch("http://localhost:3000/", {
+                let res = await fetch("https://restful-api-todo-list-express.onrender.com/", {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -36,7 +36,7 @@ export const useTodoStore = defineStore("todo", () => {
         console.log(email);
         console.log(newTodo);
         try{
-            let res = await fetch("http://localhost:3000/", {
+            let res = await fetch("https://restful-api-todo-list-express.onrender.com/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -54,7 +54,7 @@ export const useTodoStore = defineStore("todo", () => {
     async function removeTodo(id){
         let email = datas.value.email;
         try{
-            let res = await fetch(`http://localhost:3000/${id}?email=${encodeURIComponent(email)}`, {
+            let res = await fetch(`https://restful-api-todo-list-express.onrender.com/${id}?email=${encodeURIComponent(email)}`, {
                 method: "DELETE"
             })
             if(res.ok){
@@ -68,7 +68,7 @@ export const useTodoStore = defineStore("todo", () => {
     async function toggleDone(id){
         let email = datas.value.email;
         try{
-            let res = await fetch(`http://localhost:3000/done/${id}?email=${encodeURIComponent(email)}`, {
+            let res = await fetch(`https://restful-api-todo-list-express.onrender.com/${id}?email=${encodeURIComponent(email)}`, {
                 method: "PATCH"
             })
             if(res.ok){
@@ -82,7 +82,7 @@ export const useTodoStore = defineStore("todo", () => {
     async function updateTodo(newValId, newVal){
         let email = datas.value.email;
         try{
-            let res = await fetch(`http://localhost:3000/title/${newValId}`, {
+            let res = await fetch(`https://restful-api-todo-list-express.onrender.com/${newValId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"

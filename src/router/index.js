@@ -5,6 +5,7 @@ import Progressing from "../views/Progressing.vue";
 import Finish from "../views/Finish.vue";
 import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
+import NotFound from "../views/NotFound.vue";
 
 const routes = [
     {
@@ -43,6 +44,11 @@ const routes = [
         path: "/signup",
         name: "signup",
         component: Signup
+    },
+    {
+        path: "/:pathMatch(.*)*",
+        name: "notFound",
+        component: NotFound
     }
 ];
 

@@ -70,7 +70,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-6 pt-5 d-sm-block d-none">
                 <h1 class="text-center mb-3">TODO LIST</h1>
-                <img class="pic" src="/public/todo.svg" alt="">
+                <img class="pic" src="/public/todo.svg" alt="todo">
             </div>
             <div class="col-lg-6 py-5">
                 <h1 class="d-sm-none d-block text-center">TODO LIST</h1>

@@ -3,9 +3,7 @@ import { onMounted, ref, computed } from 'vue';
 export const useTodoStore = defineStore("todo", () => {
     const todos = ref([]);
     const datas = ref({});
-    const userIsLogin = computed(() => {
-        return !! datas.value.email;
-    })
+    
     onMounted(async () => {
         await fetchTodo();
     })
@@ -68,7 +66,7 @@ export const useTodoStore = defineStore("todo", () => {
     async function toggleDone(id){
         let email = datas.value.email;
         try{
-            let res = await fetch(`https://restful-api-todo-list-express.onrender.com/${id}?email=${encodeURIComponent(email)}`, {
+            let res = await fetch(`https://restful-api-todo-list-express.onrender.com/done/${id}?email=${encodeURIComponent(email)}`, {
                 method: "PATCH"
             })
             if(res.ok){
@@ -82,7 +80,7 @@ export const useTodoStore = defineStore("todo", () => {
     async function updateTodo(newValId, newVal){
         let email = datas.value.email;
         try{
-            let res = await fetch(`https://restful-api-todo-list-express.onrender.com/${newValId}`, {
+            let res = await fetch(`https://restful-api-todo-list-express.onrender.com/title/${newValId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -99,10 +97,9 @@ export const useTodoStore = defineStore("todo", () => {
 
     function reset(){
         localStorage.clear("token");
+        localStorage.clear("loggedIn");
         todos.value.length = 0;
         Object.keys(datas.value).forEach(key => delete datas.value[key]);
-        console.log(todos.value);
-        console.log(datas.value);
     }
-    return { todos, datas, userIsLogin, addTodo, removeTodo, toggleDone, updateTodo, fetchTodo, reset }
+    return { todos, datas, addTodo, removeTodo, toggleDone, updateTodo, fetchTodo, reset }
 });

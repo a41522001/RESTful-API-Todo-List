@@ -25,6 +25,7 @@
                 toggleModal();
                 let data = await res.json();
                 localStorage.setItem("token", data.token);
+                localStorage.setItem("loggedIn", true);
                 message.value = "登入成功!";
                 email.value = "";
                 password.value = "";

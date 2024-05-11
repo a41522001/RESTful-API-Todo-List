@@ -74,7 +74,7 @@
             number_error.value = true;
             return;
         }
-        if(birthday_year === "" || birthday_month === "" || birthday_day === ""){
+        if(birthday_year.value === "" || birthday_month.value === "" || birthday_day.value === ""){
             birthday_error.value = true;
             return;
         }
@@ -89,7 +89,7 @@
         }
         console.log(datas);
         try{
-            let res = await fetch("https://restful-api-todo-list-express.onrender.com//signup", {
+            let res = await fetch("https://restful-api-todo-list-express.onrender.com/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -144,8 +144,8 @@
                         <input type="password" class="form-control" id="signup-password" placeholder="請輸入密碼" v-model="password">
                     </div>
                     <div class="mb-3 position-relative">
-                        <label for="signup-password" class="form-label">手機號碼</label><span class="error-message text-danger fs-6" v-show="number_error">手機格式錯誤</span>
-                        <input type="text" class="form-control" id="signup-password" placeholder="請輸入號碼" maxlength="10" v-model="number">
+                        <label for="signup-number" class="form-label">手機號碼</label><span class="error-message text-danger fs-6" v-show="number_error">手機格式錯誤</span>
+                        <input type="text" class="form-control" id="signup-number" placeholder="請輸入號碼" maxlength="10" v-model="number">
                     </div>
                     <div class="row mb-3">
                         <span class="text-danger fs-6 text-end" v-show="birthday_error">請填入正確的出生日期</span>

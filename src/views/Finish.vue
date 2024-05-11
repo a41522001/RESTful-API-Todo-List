@@ -5,29 +5,37 @@
     defineEmits(["remove", "toggle", "update"]);
     const newVal = ref("");
     const newValId = ref("");
-    function getId(id){
-        newValId.value = id;
-    }
     
     const modal_finish = ref(null);
-    let myModal = null;
+    let myModalFinish = null;
 
     onMounted(() => {
-        if (modal_finish.value) {
-            myModal = new bootstrap.Modal(modal_finish.value);
+        if(modal_finish.value) {
+            myModalFinish = new bootstrap.Modal(modal_finish.value);
         }
     });
-
+    function getId(id){
+        newValId.value = id;
+        myModalFinish.show();
+    }
     function toggleModal() {
-        if(!myModal){
+        if(!myModalFinish){
             return;
         }
-        myModal.hide();
         const modalBackdrop = document.querySelector('.modal-backdrop');
-        if (modalBackdrop) {
+        if(!modalBackdrop){
+            return;
+        }
+        myModalFinish.hide();
+        modal_finish.value.addEventListener('hidden.bs.modal', () => {
+            let body = document.querySelector("body");
+            body.style.overflow = "auto"; 
+        });
+        if(modalBackdrop){
             modalBackdrop.remove();
         }
     }
+    
     watchEffect(() => {
         if(todos.value.length > 0){
             toggleModal();
@@ -43,17 +51,17 @@
                 <li v-if="todo.done" class="list-group-item d-flex align-items-center">
                     <input class="form-check-input me-3 fs-4 fs-md-3 m-0" type="checkbox" :checked="todo.done" @click="$emit('toggle', todo.id)">
                     <p class="fs-4 fs-md-3 m-0" :class="{done: todo.done}">{{ todo.title }}</p>
-                    <button class="btn btn-secondary btn-sm ms-auto me-2" data-bs-toggle="modal" data-bs-target="#update-todo-all-modal"  @click="getId(todo.id)">更改</button>
+                    <button class="btn btn-secondary btn-sm ms-auto me-2" @click="getId(todo.id)">更改</button>
                     <button class="btn btn-sm me-md-3 del-btn" @click="$emit('remove', todo.id)">刪除</button>
                 </li>
             </template>
         </ul>
 
-        <div class="modal fade" id="update-todo-all-modal" tabindex="-1" ref="modal_finish">
+        <div class="modal fade" id="update-todo-finish-modal" tabindex="-1" ref="modal_finish">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">更改事項</h5>
+                        <h5 class="modal-title">更改事項</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">

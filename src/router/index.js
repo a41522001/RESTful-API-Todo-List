@@ -50,4 +50,17 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 });
+
+router.beforeEach((to, from) => {
+    if(!to.path.startsWith("/login")){
+        if(to.path.startsWith("/signup")){
+            return true;
+        }
+        if(localStorage.getItem("loggedIn")){
+            return true;
+        }else{
+            return "/login";
+        }
+    }
+})
 export default router;

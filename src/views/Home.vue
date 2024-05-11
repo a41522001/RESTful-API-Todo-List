@@ -13,12 +13,9 @@
     watchEffect(() => {
         datas.value = todoStore.datas;
     })
-    const userIsLogin = computed(() => {
-        return todoStore.userIsLogin;
-    })
     const newTodo = ref("");
     async function addTodo(){
-        if(newTodo != ""){
+        if(newTodo.value != ""){
             await todoStore.addTodo(newTodo.value);
             newTodo.value = "";
         }else{
@@ -44,7 +41,6 @@
 </script>
 
 <template>
-    <div v-if="userIsLogin">
         <header>
             <h1 class="text-center text-primary fw-bold py-4">Todo List</h1>
             <button class="logout-btn btn btn-secondary btn-sm" @click.prevent="logout">登出</button>
@@ -110,7 +106,6 @@
                 </div>
             </div>
         </main>
-    </div>
 </template>
 
 <style scoped>

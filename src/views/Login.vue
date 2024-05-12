@@ -8,20 +8,23 @@
     const email = ref("");
     const password = ref("");
     const router = useRouter();
+    const loading = ref(false);
     async function login(){
+        loading.value = true;
         const data = {
             email: email.value,
             password: password.value
         }
         try{
             let res = await fetch("https://restful-api-todo-list-express.onrender.com/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
             if(res.ok){
+                loading.value = false;
                 toggleModal();
                 let data = await res.json();
                 localStorage.setItem("token", data.token);
@@ -38,11 +41,13 @@
                     router.push({name: "home"});
                 }, 2000);
             }else{
+                loading.value = false;
                 let err = await res.json();
                 message.value = err.message;
                 toggleModal();
             }
         }catch(err){
+            loading.value = false;
             console.log(err.message);
             message.value = err.message;
             toggleModal();
@@ -106,11 +111,58 @@
             </div>
         </div>
     </div>
+    <div class="wrap" v-show="loading">
+        <div class="load-container">
+            <div class="load"></div>
+            <div class="content">
+                <p>正在連接伺服器中，請稍後．．．</p>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <style scoped>
     .pic{
         width: 100%;
+    }
+    .wrap{
+        position: fixed;
+        top: 0;
+        z-index: 5;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .load-container{
+        width: 280px;
+        height: 150px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .load{
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: #f3f3f3 6px solid;
+        border-top: #3498db 6px solid;
+        animation: load 2.5s linear infinite;
+    }
+    @keyframes load {
+        0%{
+            transform: rotate(0deg);
+        }100%{
+            transform: rotate(360deg);
+        }
     }
     @media (max-width: 992px) {
         .pic{

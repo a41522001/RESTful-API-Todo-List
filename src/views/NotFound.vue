@@ -6,7 +6,7 @@
     
     <h1>Not Found 404</h1>
     <div class="pic">
-        <img src="/public/not found 404.svg" alt="not found 404">
+        <img src="/public/not-found-404.svg" alt="not found 404">
     </div>
 </template>
 

@@ -2,37 +2,31 @@
     import { ref, onMounted, computed } from "vue";
     import { useRouter } from "vue-router";
     import * as bootstrap from 'bootstrap';
+    import flatpickr from 'flatpickr';
+    import 'flatpickr/dist/flatpickr.css';
     const router = useRouter();
-    const years = ref([]);
+    const loading = ref(false);
     const modal = ref(null);
     let myModal = null;
     onMounted(() => {
-        for(let i = 1924; i <= 2024; i++){
-            years.value.push(i);
-        }
         if (modal.value) {
             myModal = new bootstrap.Modal(modal.value);
         }
     })
-    
+    const birthdayRef = ref(null);
+    onMounted(() => {
+        flatpickr(birthdayRef.value, {
+            dateFormat: "Y-m-d",
+            maxDate: "today"
+        });
+    })
     //表單v-model
     const userName = ref("");
     const email = ref("");
     const password = ref("");
     const number = ref("");
     const date = new Intl.DateTimeFormat('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date());
-    const birthday_year = ref("");
-    const birthday_month = ref("");
-    const birthday_day = ref("");
-    const birthday = computed(() => {
-        if(birthday_year.value !== "" && birthday_month.value !=="" && birthday_day.value !== "" ){
-            const month = String(birthday_month.value).padStart(2, '0');
-            const day = String(birthday_day.value).padStart(2, '0');
-            return `${birthday_year.value}-${month}-${day}`;
-        }else{
-            return "";
-        }
-    })
+    const birthday = ref("");
     const todos = [];
     
     //正則表達式
@@ -74,10 +68,10 @@
             number_error.value = true;
             return;
         }
-        if(birthday_year.value === "" || birthday_month.value === "" || birthday_day.value === ""){
-            birthday_error.value = true;
+        if(!birthday.value){
             return;
         }
+        loading.value = true;
         let datas = {
             userName: userName.value,
             email: email.value,
@@ -97,6 +91,7 @@
                 body: JSON.stringify(datas)
             })
             if(res.ok){
+                loading.value = false;
                 clearErrorMessage();
                 myModal.show();
                 setTimeout(() => {
@@ -113,8 +108,10 @@
                 console.log(err.message);
                 email_error.value = true;
                 email_error_message.value = err.message;
+                loading.value = false;
             }
         }catch(err){
+            loading.value = false;
             console.log(err.message);
         }
     }
@@ -147,29 +144,9 @@
                         <label for="signup-number" class="form-label">手機號碼</label><span class="error-message text-danger fs-6" v-show="number_error">手機格式錯誤</span>
                         <input type="text" class="form-control" id="signup-number" placeholder="請輸入號碼" maxlength="10" v-model="number">
                     </div>
-                    <div class="row mb-3">
-                        <span class="text-danger fs-6 text-end" v-show="birthday_error">請填入正確的出生日期</span>
-                        <div class="col-sm-4">
-                            <label class="form-label" for="signup-birthday-year">出生年份</label>
-                            <select class="form-select" id="signup-birthday-year" v-model="birthday_year">
-                                <option value="" disabled selected>選擇年份</option>
-                                <option v-for="year in years" :value="year">{{ year }}年</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-4">
-                            <label class="form-label" for="signup-birthday-month">出生月份</label>
-                            <select class="form-select" id="signup-birthday-month" v-model="birthday_month">
-                                <option value="" disabled selected>選擇月份</option>
-                                <option v-for="n in 12" :value="n">{{ n }}月</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-4">
-                            <label class="form-label" for="signup-birthday-day">出生日期</label>
-                            <select class="form-select" id="signup-birthday-day" v-model="birthday_day">
-                                <option value="" disabled selected>選擇日期</option>
-                                <option v-for="n in 31" :value="n">{{ n }}日</option>
-                            </select>
-                        </div>   
+                    <div class="mb-3 position-relative">
+                        <label for="signup-birthday" class="form-label">出生日期</label><span class="error-message text-danger fs-6" v-show="birthday_error">請選擇出生日期</span>
+                        <input type="text" class="form-control" id="signup-birthday" placeholder="請選擇出生日期" v-model="birthday" ref="birthdayRef">
                     </div>
                     <button type="button" class="btn btn-primary w-75 d-block mx-auto mt-5" @click="signup">註冊</button>
                 </form>
@@ -192,6 +169,14 @@
             </div>
         </div>
     </div>
+    <div class="wrap" v-show="loading">
+        <div class="load-container">
+            <div class="load"></div>
+            <div class="content">
+                <p>正在連接伺服器中，請稍後．．．</p>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -202,6 +187,44 @@
         position: absolute;
         top: 5px;
         right: 0;
+    }
+    .wrap{
+        position: fixed;
+        top: 0;
+        z-index: 5;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, .5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .load-container{
+        width: 280px;
+        height: 150px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .load{
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: #f3f3f3 6px solid;
+        border-top: #3498db 6px solid;
+        animation: load 2.5s linear infinite;
+    }
+    @keyframes load {
+        0%{
+            transform: rotate(0deg);
+        }100%{
+            transform: rotate(360deg);
+        }
     }
     @media (max-width: 992px) {
         .pic{

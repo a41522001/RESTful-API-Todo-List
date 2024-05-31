@@ -7,9 +7,11 @@
     const message = ref("");
     const email = ref("");
     const password = ref("");
+    const number = ref("");
     const router = useRouter();
     const loading = ref(false);
-    async function login(){
+    const msg = ref("");
+    async function login(login){
         loading.value = true;
         const data = {
             email: email.value,
@@ -25,7 +27,7 @@
             })
             if(res.ok){
                 loading.value = false;
-                toggleModal();
+                toggleModal(login);
                 let data = await res.json();
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("loggedIn", true);
@@ -44,13 +46,13 @@
                 loading.value = false;
                 let err = await res.json();
                 message.value = err.message;
-                toggleModal();
+                toggleModal(login);
             }
         }catch(err){
             loading.value = false;
             console.log(err.message);
             message.value = err.message;
-            toggleModal();
+            toggleModal(login);
         }   
     }
     const modal = ref(null);
@@ -61,12 +63,50 @@
             myModal = new bootstrap.Modal(modal.value);
         }
     });
-
-    function toggleModal() {
+    const loginContent = ref(false);
+    const forgetPasswordContent = ref(false);
+    function toggleModal(e) {
+        loginContent.value = false;
+        forgetPasswordContent.value = false;
+        if(e == "login"){
+            loginContent.value = true;
+        }else if(e == "forgetPassword"){
+            forgetPasswordContent.value = true;
+        }
         if(!myModal){
             return;
         }
         myModal.show();
+    }
+    function openForgetPasswordModal(forgetPassword){
+        toggleModal(forgetPassword);
+    }
+    async function forgetPassword(){
+        if(email.value !== "" && number.value !== ""){
+            const datas = {
+                email: email.value,
+                number: number.value
+            }
+            try {
+                let res = await fetch("https://restful-api-todo-list-express.onrender.com/forgetPassword", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(datas)
+                })
+                if(res.ok){
+                    let json = await res.json();
+                    msg.value = json.data;
+                }else{
+                    console.log("電子信箱與手機號碼錯誤");
+                }
+            } catch (err) {
+                console.log(err.message);
+            }
+        }else{
+            msg.value = "請填寫電子信箱與號碼";
+        }
     }
 </script>
 
@@ -88,18 +128,20 @@
                         <label for="login-password" class="form-label">密碼</label>
                         <input type="password" class="form-control" id="login-password" placeholder="請輸入密碼" v-model="password">
                     </div>
-                    <button type="button" class="btn btn-primary w-75 d-block mx-auto" @click="login">登入</button>
-                    <router-link to="/signup" class="link-dark text-decoration-none d-block text-center mt-3">註冊帳號</router-link>
+                    <button type="button" class="btn btn-primary w-75 d-block mx-auto important-btn" @click="login('login')">登入</button>
+                    <router-link to="/signup" class="btn btn-primary w-75 d-block mx-auto mt-3 important-btn">註冊帳號</router-link>
+                    <div class="text-center">
+                        <a @click="openForgetPasswordModal('forgetPassword')" class="forget-password">忘記密碼</a>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
     
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" ref="modal">
-        <div class="modal-dialog">
+        <div class="modal-dialog" v-show="loginContent">
             <div class="modal-content">
             <div class="modal-header">
-                
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -107,6 +149,33 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">確定</button>
+            </div>
+            </div>
+        </div>
+        <div class="modal-dialog" v-show="forgetPasswordContent">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="mb-0 text-center fs-3">忘記密碼了嗎?</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">輸入您的電子郵件與手機號碼</p>
+                <form>
+                    <div class="mb-3">
+                        <label for="forget-password-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="forget-password-email" aria-describedby="emailHelp" placeholder="請輸入信箱" v-model="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="forget-password-number" class="form-label">手機號碼</label>
+                        <input type="text" class="form-control" id="forget-password-number" placeholder="請輸入號碼" maxlength="10" v-model="number">
+                    </div>
+                    <div class="mb-3">
+                        <p class="ps-1 text-danger">{{ msg }}</p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" @click="forgetPassword">找回密碼</button>
             </div>
             </div>
         </div>
@@ -125,6 +194,10 @@
 <style scoped>
     .pic{
         width: 100%;
+    }
+    .forget-password{
+        font-size: 1rem;
+        color: #313131;
     }
     .wrap{
         position: fixed;
@@ -169,6 +242,11 @@
             display: block;
             margin: auto;
             width: 50%;
+        }
+    }
+    @media (max-width: 575px) {
+        .important-btn{
+            width: 100% !important;
         }
     }
 </style>

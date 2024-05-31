@@ -1,19 +1,26 @@
 <h1>Todo List</h1>
-<h3>介紹:</h3>
-<p>串接後端的RESTful API實現代辦事項的CRUD<br>
-能夠註冊會員與登入會員，並且能連接資料庫來記錄會員資料<br>
-根據每個會員專屬的代辦事項顯示於前端畫面上<br>
-每一次的CRUD都會連接資料庫更改並重新讀取資料庫<br>
-有三個主頁面由Vue的Router來進行處理<br>
-分別為首頁、登入與註冊頁面，並由導航守衛依有無登入數據進行切換</p>
-<h3>使用到的工具與技術:</h3>
-<p>Javascript使用框架為Vue3.js<br>
-使用技術有Pinia與Router<br>
-CSS框架為Bootstrap</br>
-工具為Npm與Vite</p>
-<div>
-    <a href="https://github.com/a41522001/RESTful-API-Todo-List-Express">後端Github連結</a>
-    <a href="https://todolist-test-5x2t.onrender.com/">專案連結</a>
-    <p>第一次登入帳號連結伺服器需要等待一下，如果出現伺服器錯誤請再重試一次</p>
-</div>
 
+<h3>介紹</h3>
+<p>
+    這是一個透過 RESTful API 實現代辦事項 CRUD 功能的應用程式。<br>
+    用戶可以註冊和登入帳號，並將會員資料存儲於資料庫中。<br>
+    每個會員的專屬代辦事項會顯示在前端畫面上。<br>
+    每次進行 CRUD 操作時，系統會連接資料庫進行更新並重新讀取數據。<br>
+    應用有三個主要頁面：首頁、登入頁面和註冊頁面，並使用 Vue Router 根據用戶登入狀態進行導航守衛。
+</p>
+
+<h3>使用到的工具與技術</h3>
+<ul>
+    <li>前端框架：Vue 3</li>
+    <li>狀態管理：Pinia</li>
+    <li>路由管理：Vue Router</li>
+    <li>CSS 框架：Bootstrap</li>
+    <li>開發工具：NPM 和 Vite</li>
+</ul>
+
+<h3>連結</h3>
+<ul>
+    <li><a href="https://github.com/a41522001/RESTful-API-Todo-List-Express" target="_blank">後端 GitHub 連結</a></li>
+    <li><a href="https://todolist-test-5x2t.onrender.com/" target="_blank">專案連結</a></li>
+</ul>
+<p>第一次登入帳號時，連接伺服器需要等待片刻。如果出現伺服器錯誤，請再試一次。</p>
